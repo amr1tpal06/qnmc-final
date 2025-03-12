@@ -21,6 +21,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 public class GUI extends JFrame {
 
 	private JPanel panel;
+	private int max_value;
 	
 	private JLabel mintermInputLabel;
 	private JTextField mintermInputField;
@@ -111,54 +112,34 @@ public class GUI extends JFrame {
 				System.out.println(mintermInputField.getText());
 				String mintext = mintermInputField.getText();
 
-				
-				if (bits == 3) {
-					
-					try {
-						minterm = Integer.parseInt(mintext);
-					} catch (NumberFormatException e) {
-						minterm = -1;
-					}
-
-					if (minterm < 0 || minterm > 7) {
-						JOptionPane.showMessageDialog(null, "Number should be within 0 to 7\nPlease press Next and give your input again",
-								"Error", JOptionPane.ERROR_MESSAGE, null);
-					} else
-						validatedMinterm = mintermInputField.getText();
-				}
-				if (bits == 4) {
-					
-					try {
-						minterm = Integer.parseInt(mintext);
-					} catch (NumberFormatException e) {
-						minterm = -1;
-					}
-
-					if (minterm < 0 || minterm > 15) {
-						JOptionPane.showMessageDialog(null, "Number should be within 0 to 15\nPlease press Next and give your input again",
-								"Error", JOptionPane.ERROR_MESSAGE, null);
-					} else
-						validatedMinterm = mintermInputField.getText();
-
+				// validate minterm()
+				try {
+					minterm = Integer.parseInt(mintext);
+				} catch (NumberFormatException e) {
+					minterm = -1;
 				}
 
-				if (bits == 5) {
-					
-					try {
-						minterm = Integer.parseInt(mintext);
-					} catch (NumberFormatException e) {
-						minterm = -1;
-					}
-
-					if (minterm < 0 || minterm > 31) {
-						JOptionPane.showMessageDialog(null, "Number should be within 0 to 31\nPlease press Next and give your input again",
-								"Error", JOptionPane.ERROR_MESSAGE, null);
-					} else
-						validatedMinterm = mintermInputField.getText();
-
+				switch (bits) {
+					case 3:
+						max_value = 7;
+						break;
+					case 4:
+						max_value = 15;
+						break;
+					case 5:
+						max_value = 31;
+						break;
 				}
 
+				if (minterm < 0 || minterm > max_value) {
+					JOptionPane.showMessageDialog(null,
+							"Number should be within 0 to " + max_value + "\nPlease press Next and give your input again",
+							"Error", JOptionPane.ERROR_MESSAGE, null);
+				} else {
+					validatedMinterm = mintermInputField.getText();
+				}
 			}
+
 
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -174,7 +155,7 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				//add minterm
 				mintermInputField.setText("");
 				item.setMinList(validatedMinterm);
 
@@ -195,7 +176,7 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
+				//apply quine ()
 				Quine quine = new Quine();
 
 				
@@ -256,6 +237,8 @@ public class GUI extends JFrame {
 		
 		String bitInput = JOptionPane
 				.showInputDialog("Enter the boolean bits(3 to 5): ");
+
+		//validate bits()
 		try {
 			MenuBar.bits= Integer.parseInt(bitInput);
 		} catch (NumberFormatException e) {
