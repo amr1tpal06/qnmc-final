@@ -1,5 +1,11 @@
 package qnmc;
+//extra ui, extract action listeners
 
+//error handling
+
+//hardcoded values constants- strings and integers
+
+//mvc, design patterns
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,10 +35,30 @@ public class GUI extends JFrame {
 	private JButton calculateButton;
 	private String result;
 
-	static public int minterm =0;
-	public static String validatedMinterm;
+	private static  int minterm =0;
+	private static String validatedMinterm;
 	GetMintermList item = new GetMintermList();
-	static public Set<String> mintermlist;
+	public static Set<String> mintermlist;
+
+	private static final String QUINE_MCCLUSKEY_TITLE="Quine McCluskey Prime Implicant Generator";
+	private static final String NEXT_BUTTON_TEXT = "Next";
+	private static final String CALCULATE_BUTTON_TEXT = "Calculate";
+	private static final String MINTERM_INPUT_LABEL_TEXT = "Enter Minterm list: ";
+	private static final String BITS_INPUT_DIALOG="Enter the boolean bits(3 to 5): ";
+
+	private static final String WRONG_INPUT = "Wrong input. Press File and then NEW.";
+	private static final String MINTERM_OUT_OF_BOUNDS = "Number should be within 0 to ";
+	private static final String ENTER_VALID_BITS = "\nPlease press Next and give your input again";
+	private static final String ERROR = "Error";
+
+	private static final String NIMBUS= "Nimbus";
+	private static final String DEFAULT_FONT = "Verdana";
+
+	private static final int DEFAULT_BITS = 2;
+	private static final int MIN_BITS = 3;
+	private static final int MAX_BITS = 5;
+
+
 
 	public static String applyQuineMcCluskey(Set<String> mintermlist){
 		Quine quine = new Quine();
@@ -56,8 +82,8 @@ public class GUI extends JFrame {
 
 	public static void showMintermError(int maxMintermValue){
 		JOptionPane.showMessageDialog(null,
-				"Number should be within 0 to " + maxMintermValue + "\nPlease press Next and give your input again",
-				"Error", JOptionPane.ERROR_MESSAGE, null);
+				MINTERM_OUT_OF_BOUNDS + maxMintermValue + ENTER_VALID_BITS,
+				ERROR, JOptionPane.ERROR_MESSAGE, null);
 	}
 
 	public static void validateMinterm(String minText){
@@ -87,8 +113,7 @@ public class GUI extends JFrame {
 
 	public GUI() {
 
-
-		super("Quine McCluskey Prime Implicant Generator");
+		super(QUINE_MCCLUSKEY_TITLE);
 		setLayout(null);
 		setSize(550, 500);
 		setResizable(false);
@@ -100,9 +125,9 @@ public class GUI extends JFrame {
 		MenuBar bar = new MenuBar();
 		setJMenuBar(bar);
 
-        JLabel mintermInputLabel = new JLabel("Enter Minterm list: ");
+        JLabel mintermInputLabel = new JLabel(MINTERM_INPUT_LABEL_TEXT);
 		mintermInputLabel.setBounds(50, 100, 150, 30);
-		mintermInputLabel.setFont(new Font("Verdana", Font.BOLD, 14));
+		mintermInputLabel.setFont(new Font(DEFAULT_FONT, Font.BOLD, 14));
 		panel.add(mintermInputLabel);
 
 		mintermInputField = new JTextField();
@@ -140,7 +165,7 @@ public class GUI extends JFrame {
 		});
 		panel.add(mintermInputField);
 
-		nextButton = new JButton("Next");
+		nextButton = new JButton(NEXT_BUTTON_TEXT);
 		nextButton.setBounds(140, 140, 70, 30);
 		nextButton.addActionListener(new ActionListener() {
 
@@ -159,7 +184,7 @@ public class GUI extends JFrame {
 		resultTextArea.setEditable(false);
 		panel.add(resultTextArea);
 
-		calculateButton = new JButton("Calculate");
+		calculateButton = new JButton(CALCULATE_BUTTON_TEXT);
 		calculateButton.setBounds(400, 250, 100, 50);
 		calculateButton.addActionListener(new ActionListener() {
 
@@ -180,11 +205,9 @@ public class GUI extends JFrame {
 
 	public static void main(String[] args) {
 
-
-
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
+				if (NIMBUS.equals(info.getName())) {
 					UIManager.setLookAndFeel(info.getClassName());
 					break;
 				}
@@ -198,19 +221,19 @@ public class GUI extends JFrame {
 
 
 		String bitInput = JOptionPane
-				.showInputDialog("Enter the boolean bits(3 to 5): ");
+				.showInputDialog(BITS_INPUT_DIALOG);
 
 		//validate bits()
 		try {
 			MenuBar.bits= Integer.parseInt(bitInput);
 		} catch (NumberFormatException e) {
 
-			MenuBar.bits= 2;
+			MenuBar.bits= DEFAULT_BITS;
 		}
 
-		if (MenuBar.bits< 3 || MenuBar.bits> 5) {
+		if (MenuBar.bits< MIN_BITS || MenuBar.bits> MAX_BITS) {
 			JOptionPane.showMessageDialog(null,
-					"Wrong input. Press File and then NEW", "Error",
+					WRONG_INPUT, ERROR,
 					JOptionPane.ERROR_MESSAGE, null);
 
 		}
