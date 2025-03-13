@@ -1,16 +1,13 @@
 package qnmc;
-//extra ui, extract action listeners
-
-//error handling
-
-//hardcoded values constants- strings and integers
+//extract ui, extract action listeners
+//extract classes - almost there and then mvc and design patterns
 
 //mvc, design patterns
+
+
+//buttons - input, next, calculate
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -28,12 +25,12 @@ public class GUI extends JFrame {
 	private JPanel panel;
 	private static int maxMintermValue;
 
-    private JTextField mintermInputField;
+    private static JTextField mintermInputField;
 	private JButton nextButton;
 
-	private JTextArea resultTextArea;
+	private static JTextArea resultTextArea;
 	private JButton calculateButton;
-	private String result;
+	private static String result;
 
 	private static  int minterm =0;
 	private static String validatedMinterm;
@@ -58,7 +55,46 @@ public class GUI extends JFrame {
 	private static final int MIN_BITS = 3;
 	private static final int MAX_BITS = 5;
 
+	public static void mintermInputAction(){
+		System.out.println(mintermInputField.getText());
+		String mintext = mintermInputField.getText();
 
+		// validate number, gets max value, validates minterm()
+		try {
+			minterm = Integer.parseInt(mintext);
+		} catch (NumberFormatException e) {
+			minterm = -1;
+		}
+
+		validateMinterm(mintext);
+	}
+
+	public static void calculateButtonAction (){
+		mintermlist = GetMintermList.getMin();
+		result = applyQuineMcCluskey(mintermlist);
+		resultTextArea.setText(result);
+	}
+
+	public static void nextButtonAction(JTextField mintermInputField, GetMintermList item){
+		mintermInputField.setText("");
+		item.setMinList(validatedMinterm);
+	}
+
+	public static void validateBits(String bitInput){
+		try {
+			MenuBar.bits= Integer.parseInt(bitInput);
+		} catch (NumberFormatException e) {
+
+			MenuBar.bits= DEFAULT_BITS;
+		}
+
+		if (MenuBar.bits< MIN_BITS || MenuBar.bits> MAX_BITS) {
+			JOptionPane.showMessageDialog(null,
+					WRONG_INPUT, ERROR,
+					JOptionPane.ERROR_MESSAGE, null);
+
+		}
+	}
 
 	public static String applyQuineMcCluskey(Set<String> mintermlist){
 		Quine quine = new Quine();
@@ -133,49 +169,18 @@ public class GUI extends JFrame {
 		mintermInputField = new JTextField();
 		mintermInputField.setBounds(50, 140, 70, 30);
 
-		mintermInputField.addKeyListener(new KeyListener() {
-
+		mintermInputField.addKeyListener(new KeyAdapter() { //KeyAdapter to override only the methods you care about (in this case, keyReleased)
 			@Override
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				System.out.println(mintermInputField.getText());
-				String mintext = mintermInputField.getText();
-
-				// validate number, gets max value, validates minterm()
-				try {
-					minterm = Integer.parseInt(mintext);
-				} catch (NumberFormatException e) {
-					minterm = -1;
-				}
-
-				validateMinterm(mintext);
-			}
-
-
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-
+			public void keyReleased(KeyEvent e) {
+				mintermInputAction();
 			}
 		});
 		panel.add(mintermInputField);
 
 		nextButton = new JButton(NEXT_BUTTON_TEXT);
 		nextButton.setBounds(140, 140, 70, 30);
-		nextButton.addActionListener(new ActionListener() {
+		nextButton.addActionListener(e-> nextButtonAction(mintermInputField, item));
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//add minterm
-				mintermInputField.setText("");
-				item.setMinList(validatedMinterm);
-			}
-		});
 		panel.add(nextButton);
 
 
@@ -190,9 +195,7 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				mintermlist = GetMintermList.getMin();
-				result = applyQuineMcCluskey(mintermlist);
-				resultTextArea.setText(result);
+				calculateButtonAction();
 
 			}
 		});
@@ -223,21 +226,7 @@ public class GUI extends JFrame {
 		String bitInput = JOptionPane
 				.showInputDialog(BITS_INPUT_DIALOG);
 
-		//validate bits()
-		try {
-			MenuBar.bits= Integer.parseInt(bitInput);
-		} catch (NumberFormatException e) {
-
-			MenuBar.bits= DEFAULT_BITS;
-		}
-
-		if (MenuBar.bits< MIN_BITS || MenuBar.bits> MAX_BITS) {
-			JOptionPane.showMessageDialog(null,
-					WRONG_INPUT, ERROR,
-					JOptionPane.ERROR_MESSAGE, null);
-
-		}
-
+		validateBits(bitInput);
 
 		GUI gui = new GUI();
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
