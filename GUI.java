@@ -1,18 +1,10 @@
 package qnmc;
 
-//max_value
-//hardcoded values, redundant event listeners
-//components and event listeners separate
-//modularise events into methods --> flow of data, separate into mvc
-//design patterns
-// rough documentation - couple of pages plan and then aim for 15
-
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -28,19 +20,54 @@ import javax.swing.UIManager.LookAndFeelInfo;
 public class GUI extends JFrame {
 
 	private JPanel panel;
-	private int max_value;
+	private static int maxMintermValue;
 
-	private JLabel mintermInputLabel;
-	private JTextField mintermInputField;
+    private JTextField mintermInputField;
 	private JButton nextButton;
 
 	private JTextArea resultTextArea;
 	private JButton calculateButton;
+	private String result;
 
 	static public int minterm =0;
-	static public Set<String> mintermlist;
-	public String validatedMinterm;
+	public static String validatedMinterm;
 	GetMintermList item = new GetMintermList();
+	static public Set<String> mintermlist;
+
+	public static String applyQuineMcCluskey(Set<String> mintermlist){
+		Quine quine = new Quine();
+		try {
+
+			for (String mintermitem : mintermlist) {
+
+				quine.addTerm(toBinary(MenuBar.bits, mintermitem));
+
+				System.out.println(mintermitem);
+			}
+
+			quine.simplify();
+			return quine.toString();
+
+		} catch (ExceptionQuine e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static void showMintermError(int maxMintermValue){
+		JOptionPane.showMessageDialog(null,
+				"Number should be within 0 to " + maxMintermValue + "\nPlease press Next and give your input again",
+				"Error", JOptionPane.ERROR_MESSAGE, null);
+	}
+
+	public static void validateMinterm(String minText){
+		maxMintermValue = getmaxvalue(MenuBar.bits);
+		if (minterm < 0 || minterm > maxMintermValue) {
+			showMintermError(maxMintermValue);
+		} else {
+			validatedMinterm = minText;
+		}
+	}
 
 	static public String toBinary (int bits, String mintermitem){
 		int mintermnumber = Integer.parseInt(mintermitem);
@@ -56,7 +83,7 @@ public class GUI extends JFrame {
 
 	public static int getmaxvalue(int bits) {
 		return (1 << bits) - 1; // 2^bits - 1
-	}
+	};
 
 	public GUI() {
 
@@ -73,7 +100,7 @@ public class GUI extends JFrame {
 		MenuBar bar = new MenuBar();
 		setJMenuBar(bar);
 
-		mintermInputLabel = new JLabel("Enter Minterm list: ");
+        JLabel mintermInputLabel = new JLabel("Enter Minterm list: ");
 		mintermInputLabel.setBounds(50, 100, 150, 30);
 		mintermInputLabel.setFont(new Font("Verdana", Font.BOLD, 14));
 		panel.add(mintermInputLabel);
@@ -91,28 +118,17 @@ public class GUI extends JFrame {
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-
-				int bits = MenuBar.bits;
-
 				System.out.println(mintermInputField.getText());
 				String mintext = mintermInputField.getText();
 
-				// gets max value, validates minterm()
+				// validate number, gets max value, validates minterm()
 				try {
 					minterm = Integer.parseInt(mintext);
 				} catch (NumberFormatException e) {
 					minterm = -1;
 				}
 
-				max_value = getmaxvalue(bits);
-
-				if (minterm < 0 || minterm > max_value) {
-					JOptionPane.showMessageDialog(null,
-							"Number should be within 0 to " + max_value + "\nPlease press Next and give your input again",
-							"Error", JOptionPane.ERROR_MESSAGE, null);
-				} else {
-					validatedMinterm = mintermInputField.getText();
-				}
+				validateMinterm(mintext);
 			}
 
 
@@ -133,8 +149,6 @@ public class GUI extends JFrame {
 				//add minterm
 				mintermInputField.setText("");
 				item.setMinList(validatedMinterm);
-
-
 			}
 		});
 		panel.add(nextButton);
@@ -151,34 +165,9 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//converts to bits, applies quine ()
-				Quine quine = new Quine();
-
-
 				mintermlist = GetMintermList.getMin();
-
-				//applyquine();.
-				//iterate through minterm list --> check bits and convert to binary, add to quine, retrieve quine
-				try {
-					Iterator<String> mintermlistiterator = mintermlist.iterator();
-
-					while (mintermlistiterator.hasNext() == true) {
-
-						String mintermitem = mintermlistiterator.next();
-
-						quine.addTerm(toBinary(MenuBar.bits,mintermitem));
-
-						System.out.println(mintermitem);
-					}
-
-					quine.simplify();
-					String temp1 = quine.toString();
-
-					resultTextArea.setText(temp1);
-				} catch (ExceptionQuine e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				result = applyQuineMcCluskey(mintermlist);
+				resultTextArea.setText(result);
 
 			}
 		});
@@ -233,3 +222,5 @@ public class GUI extends JFrame {
 
 	}
 }
+
+
