@@ -1,4 +1,8 @@
 package qnmc;
+//extract ui
+//extract classes - almost there and then mvc and design patterns
+
+//mvc, design patterns
 import java.awt.Font;
 import java.awt.event.*;
 import java.util.Set;
@@ -15,17 +19,13 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 public class GUI extends JFrame {
 
-	private JPanel panel;
-	private static int maxMintermValue;
-
     private static JTextField mintermInputField;
-	private JButton nextButton;
+	private final JButton nextButton;
 
 	private static JTextArea resultTextArea;
-	private JButton calculateButton;
-	private static String result;
+	private final JButton calculateButton;
 
-	private static  int minterm =0;
+    private static  int minterm =0;
 	private static String validatedMinterm;
 	GetMintermList item = new GetMintermList();
 	public static Set<String> mintermlist;
@@ -88,7 +88,7 @@ public class GUI extends JFrame {
 
 	public static void handleCalculateButton(){
 		mintermlist = GetMintermList.getMin();
-		result = applyQuineMcCluskey(mintermlist);
+        String result = applyQuineMcCluskey(mintermlist);
 		resultTextArea.setText(result);
 	}
 
@@ -140,7 +140,7 @@ public class GUI extends JFrame {
 	}
 
 	public static void validateMinterm(String minText){
-		maxMintermValue = getmaxvalue(MenuBar.bits);
+        int maxMintermValue = getmaxvalue(MenuBar.bits);
 		if (minterm < 0 || minterm > maxMintermValue) {
 			showMintermError(maxMintermValue);
 		} else {
@@ -170,7 +170,7 @@ public class GUI extends JFrame {
 		setLayout(null);
 		setSize(550, 500);
 		setResizable(false);
-		panel = new JPanel();
+        JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 500, 500);
 
 		panel.setLayout(null);
