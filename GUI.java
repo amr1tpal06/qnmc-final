@@ -29,27 +29,39 @@ public class GUI extends JFrame {
 
 	private JPanel panel;
 	private int max_value;
-	
+
 	private JLabel mintermInputLabel;
 	private JTextField mintermInputField;
 	private JButton nextButton;
 
 	private JTextArea resultTextArea;
 	private JButton calculateButton;
-	
+
 	static public int minterm =0;
 	static public Set<String> mintermlist;
 	public String validatedMinterm;
 	GetMintermList item = new GetMintermList();
 
+	static public String toBinary (int bits, String mintermitem){
+		int mintermnumber = Integer.parseInt(mintermitem);
+		String binary= Integer.toBinaryString(mintermnumber);
+		int zeros= bits-binary.length();
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < zeros; i++) {
+			result.append("0");
+		}
+		result.append(binary);
+		return result.toString();
+	};
+
 	static public String toThreeBitBinary(String input) {
 
-		
+
 		String bin[] = { "000", "001", "010", "011", "100", "101", "110", "111" };
 
 		int i = Integer.parseInt(input);
 
-	
+
 
 		return bin[i];
 
@@ -82,19 +94,19 @@ public class GUI extends JFrame {
 
 	public static int getmaxvalue(int bits) {
 		return (1 << bits) - 1; // 2^bits - 1
-    }
+	}
 
 	public GUI() {
-		
+
 
 		super("Quine McCluskey Prime Implicant Generator");
 		setLayout(null);
-		setSize(550, 500); 
+		setSize(550, 500);
 		setResizable(false);
-		panel = new JPanel(); 
-		panel.setBounds(0, 0, 500, 500); 
+		panel = new JPanel();
+		panel.setBounds(0, 0, 500, 500);
 
-		panel.setLayout(null); 
+		panel.setLayout(null);
 
 		MenuBar bar = new MenuBar();
 		setJMenuBar(bar);
@@ -160,7 +172,7 @@ public class GUI extends JFrame {
 				mintermInputField.setText("");
 				item.setMinList(validatedMinterm);
 
-				
+
 			}
 		});
 		panel.add(nextButton);
@@ -180,7 +192,7 @@ public class GUI extends JFrame {
 				//converts to bits, applies quine ()
 				Quine quine = new Quine();
 
-				
+
 				mintermlist = GetMintermList.getMin();
 
 				//applyquine();.
@@ -192,19 +204,14 @@ public class GUI extends JFrame {
 
 						String mintermitem = mintermlistiterator.next();
 
-						if (MenuBar.bits == 3)
-							quine.addTerm(toThreeBitBinary(mintermitem));
-						else if (MenuBar.bits == 4)
-							quine.addTerm(toFourBitBinary(mintermitem));
-						else if (MenuBar.bits == 5)
-							quine.addTerm(toFiveBitBinary(mintermitem));
+						quine.addTerm(toBinary(MenuBar.bits,mintermitem));
 
 						System.out.println(mintermitem);
 					}
-					
+
 					quine.simplify();
 					String temp1 = quine.toString();
-					
+
 					resultTextArea.setText(temp1);
 				} catch (ExceptionQuine e) {
 					// TODO Auto-generated catch block
@@ -215,15 +222,15 @@ public class GUI extends JFrame {
 		});
 		panel.add(calculateButton);
 
-		setVisible(true); 
+		setVisible(true);
 		add(panel);
 
 	}
 
 	public static void main(String[] args) {
-		
-		
-		
+
+
+
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -236,9 +243,9 @@ public class GUI extends JFrame {
 			e.printStackTrace();
 
 		}
-		
-		
-		
+
+
+
 		String bitInput = JOptionPane
 				.showInputDialog("Enter the boolean bits(3 to 5): ");
 
@@ -257,10 +264,10 @@ public class GUI extends JFrame {
 
 		}
 
-		
-		GUI gui = new GUI();
-		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 
-	
+		GUI gui = new GUI();
+		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
 	}
 }
