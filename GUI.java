@@ -1,11 +1,4 @@
 package qnmc;
-//extract ui, extract action listeners
-//extract classes - almost there and then mvc and design patterns
-
-//mvc, design patterns
-
-
-//buttons - input, next, calculate
 import java.awt.Font;
 import java.awt.event.*;
 import java.util.Set;
@@ -55,7 +48,31 @@ public class GUI extends JFrame {
 	private static final int MIN_BITS = 3;
 	private static final int MAX_BITS = 5;
 
-	public static void mintermInputAction(){
+	public void setNextButtonActionListener(){
+		nextButton.addActionListener(e-> handleNextButton(mintermInputField, item));
+	}
+
+	public void setCalculateButtonListener(){
+		calculateButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				handleCalculateButton();
+
+			}
+		});
+	}
+
+	public void setMintermInputFieldListener(){
+		mintermInputField.addKeyListener(new KeyAdapter() { //KeyAdapter to override only the methods you care about (in this case, keyReleased)
+			@Override
+			public void keyReleased(KeyEvent e) {
+				handleMintermInputField();
+			}
+		});
+	}
+
+	public static void handleMintermInputField(){
 		System.out.println(mintermInputField.getText());
 		String mintext = mintermInputField.getText();
 
@@ -69,13 +86,13 @@ public class GUI extends JFrame {
 		validateMinterm(mintext);
 	}
 
-	public static void calculateButtonAction (){
+	public static void handleCalculateButton(){
 		mintermlist = GetMintermList.getMin();
 		result = applyQuineMcCluskey(mintermlist);
 		resultTextArea.setText(result);
 	}
 
-	public static void nextButtonAction(JTextField mintermInputField, GetMintermList item){
+	public static void handleNextButton(JTextField mintermInputField, GetMintermList item){
 		mintermInputField.setText("");
 		item.setMinList(validatedMinterm);
 	}
@@ -168,21 +185,13 @@ public class GUI extends JFrame {
 
 		mintermInputField = new JTextField();
 		mintermInputField.setBounds(50, 140, 70, 30);
-
-		mintermInputField.addKeyListener(new KeyAdapter() { //KeyAdapter to override only the methods you care about (in this case, keyReleased)
-			@Override
-			public void keyReleased(KeyEvent e) {
-				mintermInputAction();
-			}
-		});
 		panel.add(mintermInputField);
+		setMintermInputFieldListener();
 
 		nextButton = new JButton(NEXT_BUTTON_TEXT);
 		nextButton.setBounds(140, 140, 70, 30);
-		nextButton.addActionListener(e-> nextButtonAction(mintermInputField, item));
-
 		panel.add(nextButton);
-
+		setNextButtonActionListener();
 
 		resultTextArea = new JTextArea();
 		resultTextArea.setBounds(50, 200, 300, 200);
@@ -191,15 +200,8 @@ public class GUI extends JFrame {
 
 		calculateButton = new JButton(CALCULATE_BUTTON_TEXT);
 		calculateButton.setBounds(400, 250, 100, 50);
-		calculateButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				calculateButtonAction();
-
-			}
-		});
 		panel.add(calculateButton);
+		setCalculateButtonListener();
 
 		setVisible(true);
 		add(panel);
@@ -221,8 +223,6 @@ public class GUI extends JFrame {
 
 		}
 
-
-
 		String bitInput = JOptionPane
 				.showInputDialog(BITS_INPUT_DIALOG);
 
@@ -230,7 +230,6 @@ public class GUI extends JFrame {
 
 		GUI gui = new GUI();
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 
 	}
 }
