@@ -1,5 +1,12 @@
 package qnmc;
 
+//max_value
+//hardcoded values, redundant event listeners
+//components and event listeners separate
+//modularise events into methods --> flow of data, separate into mvc
+//design patterns
+// rough documentation - couple of pages plan and then aim for 15
+
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -73,6 +80,10 @@ public class GUI extends JFrame {
 
 	}
 
+	public static int getmaxvalue(int bits) {
+		return (1 << bits) - 1; // 2^bits - 1
+    }
+
 	public GUI() {
 		
 
@@ -112,24 +123,14 @@ public class GUI extends JFrame {
 				System.out.println(mintermInputField.getText());
 				String mintext = mintermInputField.getText();
 
-				// validate minterm()
+				// gets max value, validates minterm()
 				try {
 					minterm = Integer.parseInt(mintext);
 				} catch (NumberFormatException e) {
 					minterm = -1;
 				}
 
-				switch (bits) {
-					case 3:
-						max_value = 7;
-						break;
-					case 4:
-						max_value = 15;
-						break;
-					case 5:
-						max_value = 31;
-						break;
-				}
+				max_value = getmaxvalue(bits);
 
 				if (minterm < 0 || minterm > max_value) {
 					JOptionPane.showMessageDialog(null,
@@ -176,11 +177,14 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//apply quine ()
+				//converts to bits, applies quine ()
 				Quine quine = new Quine();
 
 				
 				mintermlist = GetMintermList.getMin();
+
+				//applyquine();.
+				//iterate through minterm list --> check bits and convert to binary, add to quine, retrieve quine
 				try {
 					Iterator<String> mintermlistiterator = mintermlist.iterator();
 
