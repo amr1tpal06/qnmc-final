@@ -1,8 +1,7 @@
 package qnmc;
-//extract ui
-//extract classes - almost there and then mvc and design patterns
-
+//extract ui, extract classes, statics
 //mvc, design patterns
+
 import java.awt.Font;
 import java.awt.event.*;
 import java.util.Set;
@@ -21,46 +20,23 @@ public class GUI extends JFrame {
 
     private static JTextField mintermInputField;
 	private final JButton nextButton;
-
 	private static JTextArea resultTextArea;
 	private final JButton calculateButton;
 
-    private static  int minterm =0;
+    private static int minterm =0;
 	private static String validatedMinterm;
-	GetMintermList item = new GetMintermList();
+	GetMintermList minlist = new GetMintermList();
 	public static Set<String> mintermlist;
-
-	private static final String QUINE_MCCLUSKEY_TITLE="Quine McCluskey Prime Implicant Generator";
-	private static final String NEXT_BUTTON_TEXT = "Next";
-	private static final String CALCULATE_BUTTON_TEXT = "Calculate";
-	private static final String MINTERM_INPUT_LABEL_TEXT = "Enter Minterm list: ";
-	private static final String BITS_INPUT_DIALOG="Enter the boolean bits(3 to 5): ";
-
-	private static final String WRONG_INPUT = "Wrong input. Press File and then NEW.";
-	private static final String MINTERM_OUT_OF_BOUNDS = "Number should be within 0 to ";
-	private static final String ENTER_VALID_BITS = "\nPlease press Next and give your input again";
-	private static final String ERROR = "Error";
 
 	private static final String NIMBUS= "Nimbus";
 	private static final String DEFAULT_FONT = "Verdana";
 
-	private static final int DEFAULT_BITS = 2;
-	private static final int MIN_BITS = 3;
-	private static final int MAX_BITS = 5;
-
 	public void setNextButtonActionListener(){
-		nextButton.addActionListener(e-> handleNextButton(mintermInputField, item));
+		nextButton.addActionListener(e-> handleNextButton(mintermInputField, minlist));
 	}
 
 	public void setCalculateButtonListener(){
-		calculateButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				handleCalculateButton();
-
-			}
-		});
+		calculateButton.addActionListener(e -> handleCalculateButton());
 	}
 
 	public void setMintermInputFieldListener(){
@@ -73,7 +49,7 @@ public class GUI extends JFrame {
 	}
 
 	public static void handleMintermInputField(){
-		System.out.println(mintermInputField.getText());
+		System.out.println(mintermInputField.getText()); //get
 		String mintext = mintermInputField.getText();
 
 		// validate number, gets max value, validates minterm()
@@ -81,20 +57,20 @@ public class GUI extends JFrame {
 			minterm = Integer.parseInt(mintext);
 		} catch (NumberFormatException e) {
 			minterm = -1;
-		}
+		} //handle
 
-		validateMinterm(mintext);
+		validateMinterm(mintext); //return
 	}
 
 	public static void handleCalculateButton(){
-		mintermlist = GetMintermList.getMin();
-        String result = applyQuineMcCluskey(mintermlist);
-		resultTextArea.setText(result);
+		mintermlist = GetMintermList.getMin(); //get
+        String result = applyQuineMcCluskey(mintermlist); //process
+		resultTextArea.setText(result); //return
 	}
 
 	public static void handleNextButton(JTextField mintermInputField, GetMintermList item){
 		mintermInputField.setText("");
-		item.setMinList(validatedMinterm);
+		item.setMinList(validatedMinterm); //return
 	}
 
 	public static void validateBits(String bitInput){
@@ -102,14 +78,11 @@ public class GUI extends JFrame {
 			MenuBar.bits= Integer.parseInt(bitInput);
 		} catch (NumberFormatException e) {
 
-			MenuBar.bits= DEFAULT_BITS;
+			MenuBar.bits= BitsValues.DEFAULT_BITS;
 		}
 
-		if (MenuBar.bits< MIN_BITS || MenuBar.bits> MAX_BITS) {
-			JOptionPane.showMessageDialog(null,
-					WRONG_INPUT, ERROR,
-					JOptionPane.ERROR_MESSAGE, null);
-
+		if (MenuBar.bits< BitsValues.MIN_BITS || MenuBar.bits> BitsValues.MAX_BITS) {
+			showBitsError();
 		}
 	}
 
@@ -133,19 +106,25 @@ public class GUI extends JFrame {
 		}
 	}
 
-	public static void showMintermError(int maxMintermValue){
-		JOptionPane.showMessageDialog(null,
-				MINTERM_OUT_OF_BOUNDS + maxMintermValue + ENTER_VALID_BITS,
-				ERROR, JOptionPane.ERROR_MESSAGE, null);
-	}
-
 	public static void validateMinterm(String minText){
-        int maxMintermValue = getmaxvalue(MenuBar.bits);
+		int maxMintermValue = getmaxvalue(MenuBar.bits);
 		if (minterm < 0 || minterm > maxMintermValue) {
 			showMintermError(maxMintermValue);
 		} else {
 			validatedMinterm = minText;
 		}
+	}
+
+	public static void showBitsError(){
+		JOptionPane.showMessageDialog(null,
+				ValidationErrorMessages.WRONG_INPUT, ValidationErrorMessages.ERROR,
+				JOptionPane.ERROR_MESSAGE, null);
+	}
+
+	public static void showMintermError(int maxMintermValue){
+		JOptionPane.showMessageDialog(null,
+				ValidationErrorMessages.MINTERM_OUT_OF_BOUNDS + maxMintermValue + ValidationErrorMessages.ENTER_VALID_BITS,
+				ValidationErrorMessages.ERROR, JOptionPane.ERROR_MESSAGE, null);
 	}
 
 	static public String toBinary (int bits, String mintermitem){
@@ -166,7 +145,7 @@ public class GUI extends JFrame {
 
 	public GUI() {
 
-		super(QUINE_MCCLUSKEY_TITLE);
+		super(UILabels.QUINE_MCCLUSKEY_TITLE);
 		setLayout(null);
 		setSize(550, 500);
 		setResizable(false);
@@ -178,7 +157,7 @@ public class GUI extends JFrame {
 		MenuBar bar = new MenuBar();
 		setJMenuBar(bar);
 
-        JLabel mintermInputLabel = new JLabel(MINTERM_INPUT_LABEL_TEXT);
+        JLabel mintermInputLabel = new JLabel(UILabels.MINTERM_INPUT_LABEL_TEXT);
 		mintermInputLabel.setBounds(50, 100, 150, 30);
 		mintermInputLabel.setFont(new Font(DEFAULT_FONT, Font.BOLD, 14));
 		panel.add(mintermInputLabel);
@@ -188,7 +167,7 @@ public class GUI extends JFrame {
 		panel.add(mintermInputField);
 		setMintermInputFieldListener();
 
-		nextButton = new JButton(NEXT_BUTTON_TEXT);
+		nextButton = new JButton(UILabels.NEXT_BUTTON_TEXT);
 		nextButton.setBounds(140, 140, 70, 30);
 		panel.add(nextButton);
 		setNextButtonActionListener();
@@ -198,7 +177,7 @@ public class GUI extends JFrame {
 		resultTextArea.setEditable(false);
 		panel.add(resultTextArea);
 
-		calculateButton = new JButton(CALCULATE_BUTTON_TEXT);
+		calculateButton = new JButton(UILabels.CALCULATE_BUTTON_TEXT);
 		calculateButton.setBounds(400, 250, 100, 50);
 		panel.add(calculateButton);
 		setCalculateButtonListener();
@@ -224,7 +203,7 @@ public class GUI extends JFrame {
 		}
 
 		String bitInput = JOptionPane
-				.showInputDialog(BITS_INPUT_DIALOG);
+				.showInputDialog(UILabels.BITS_INPUT_DIALOG);
 
 		validateBits(bitInput);
 
