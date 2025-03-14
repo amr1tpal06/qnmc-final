@@ -1,6 +1,5 @@
 package qnmc;
-//extract ui, extract classes, statics
-//mvc, design patterns
+//design patterns
 
 import java.awt.Font;
 import java.awt.event.*;
@@ -16,131 +15,51 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+
 public class GUI extends JFrame {
 
     private static JTextField mintermInputField;
 	private final JButton nextButton;
 	private static JTextArea resultTextArea;
 	private final JButton calculateButton;
+	private Controller controller;
 
-    private static int minterm =0;
-	private static String validatedMinterm;
-	GetMintermList minlist = new GetMintermList();
+	static GetMintermList minlist = new GetMintermList();
+
+    public static int minterm =0;
 	public static Set<String> mintermlist;
 
 	public void setNextButtonActionListener(){
-		nextButton.addActionListener(e-> handleNextButton(mintermInputField, minlist));
+		nextButton.addActionListener(e-> Controller.handleNextButton());
 	}
 
 	public void setCalculateButtonListener(){
-		calculateButton.addActionListener(e -> handleCalculateButton());
+		calculateButton.addActionListener(e -> Controller.handleCalculateButton());
 	}
 
 	public void setMintermInputFieldListener(){
 		mintermInputField.addKeyListener(new KeyAdapter() { //KeyAdapter to override only the methods you care about (in this case, keyReleased)
 			@Override
 			public void keyReleased(KeyEvent e) {
-				handleMintermInputField();
+				Controller.handleMintermInputField(mintermInputField);
 			}
 		});
 	}
 
-	public static void handleMintermInputField(){
-		System.out.println(mintermInputField.getText()); //get
-		String mintext = mintermInputField.getText();
-
-		// validate number, gets max value, validates minterm()
-		try {
-			minterm = Integer.parseInt(mintext);
-		} catch (NumberFormatException e) {
-			minterm = -1;
-		} //handle
-
-		validateMinterm(mintext); //return
+	public String getMintermInput() {
+		return mintermInputField.getText();
 	}
 
-	public static void handleCalculateButton(){
-		mintermlist = GetMintermList.getMin(); //get
-        String result = applyQuineMcCluskey(mintermlist); //process
-		resultTextArea.setText(result); //return
-	}
-
-	public static void handleNextButton(JTextField mintermInputField, GetMintermList item){
+	public static void setInputField(){
 		mintermInputField.setText("");
-		item.setMinList(validatedMinterm); //return
 	}
 
-	public static void validateBits(String bitInput){
-		try {
-			MenuBar.bits= Integer.parseInt(bitInput);
-		} catch (NumberFormatException e) {
-
-			MenuBar.bits= BitsValues.DEFAULT_BITS;
-		}
-
-		if (MenuBar.bits< BitsValues.MIN_BITS || MenuBar.bits> BitsValues.MAX_BITS) {
-			showBitsError();
-		}
+	public static void updateResultArea(String result){
+		resultTextArea.setText(result);
 	}
 
-	public static String applyQuineMcCluskey(Set<String> mintermlist){
-		Quine quine = new Quine();
-		try {
 
-			for (String mintermitem : mintermlist) {
-
-				quine.addTerm(toBinary(MenuBar.bits, mintermitem));
-
-				System.out.println(mintermitem);
-			}
-
-			quine.simplify();
-			return quine.toString();
-
-		} catch (ExceptionQuine e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public static void validateMinterm(String minText){
-		int maxMintermValue = getmaxvalue(MenuBar.bits);
-		if (minterm < 0 || minterm > maxMintermValue) {
-			showMintermError(maxMintermValue);
-		} else {
-			validatedMinterm = minText;
-		}
-	}
-
-	public static void showBitsError(){
-		JOptionPane.showMessageDialog(null,
-				ValidationErrorMessages.WRONG_INPUT, ValidationErrorMessages.ERROR,
-				JOptionPane.ERROR_MESSAGE, null);
-	}
-
-	public static void showMintermError(int maxMintermValue){
-		JOptionPane.showMessageDialog(null,
-				ValidationErrorMessages.MINTERM_OUT_OF_BOUNDS + maxMintermValue + ValidationErrorMessages.ENTER_VALID_BITS,
-				ValidationErrorMessages.ERROR, JOptionPane.ERROR_MESSAGE, null);
-	}
-
-	static public String toBinary (int bits, String mintermitem){
-		int mintermnumber = Integer.parseInt(mintermitem);
-		String binary= Integer.toBinaryString(mintermnumber);
-		int zeros= bits-binary.length();
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < zeros; i++) {
-			result.append("0");
-		}
-		result.append(binary);
-		return result.toString();
-	};
-
-	public static int getmaxvalue(int bits) {
-		return (1 << bits) - 1; // 2^bits - 1
-	};
-
-	public GUI() {
+	public GUI(Controller controller) {
 
 		super(UILabels.QUINE_MCCLUSKEY_TITLE);
 		setLayout(null);
@@ -202,9 +121,11 @@ public class GUI extends JFrame {
 		String bitInput = JOptionPane
 				.showInputDialog(UILabels.BITS_INPUT_DIALOG);
 
-		validateBits(bitInput);
+		MintermValidation.validateBits(bitInput);
 
-		GUI gui = new GUI();
+		Controller controller = new Controller(new GUI(null)); // Initialize controller and view
+		GUI gui= new GUI(controller);
+
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	}
