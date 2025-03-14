@@ -28,9 +28,6 @@ public class GUI extends JFrame {
 	GetMintermList minlist = new GetMintermList();
 	public static Set<String> mintermlist;
 
-	private static final String NIMBUS= "Nimbus";
-	private static final String DEFAULT_FONT = "Verdana";
-
 	public void setNextButtonActionListener(){
 		nextButton.addActionListener(e-> handleNextButton(mintermInputField, minlist));
 	}
@@ -159,7 +156,7 @@ public class GUI extends JFrame {
 
         JLabel mintermInputLabel = new JLabel(UILabels.MINTERM_INPUT_LABEL_TEXT);
 		mintermInputLabel.setBounds(50, 100, 150, 30);
-		mintermInputLabel.setFont(new Font(DEFAULT_FONT, Font.BOLD, 14));
+		mintermInputLabel.setFont(new Font(UIConstants.DEFAULT_FONT, Font.BOLD, 14));
 		panel.add(mintermInputLabel);
 
 		mintermInputField = new JTextField();
@@ -191,7 +188,7 @@ public class GUI extends JFrame {
 
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-				if (NIMBUS.equals(info.getName())) {
+				if (UIConstants.NIMBUS.equals(info.getName())) {
 					UIManager.setLookAndFeel(info.getClassName());
 					break;
 				}
