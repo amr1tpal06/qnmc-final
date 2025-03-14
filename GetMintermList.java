@@ -1,11 +1,13 @@
 package qnmc;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class GetMintermList {
 	static Set<String> MintermList;
 	private static GetMintermList instance;
+	private final Set<Observer> observers = new HashSet<>();
 
 	public void setMinList(String x){
 
@@ -26,7 +28,17 @@ public class GetMintermList {
 	private GetMintermList() {
 		MintermList = new TreeSet<>();
 	}
-	
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
+	}
+
+	public void notifyObservers() {
+		String result = QuineProcessor.applyQuineMcCluskey(MintermList);
+		for (Observer observer : observers) {
+			observer.update(result);
+		}
+	}
 }
 
 

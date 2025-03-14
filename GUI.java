@@ -16,15 +16,13 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 
-public class GUI extends JFrame {
+public class GUI extends JFrame implements Observer {
 
-    private static JTextField mintermInputField;
+	private static JTextField mintermInputField;
 	private final JButton nextButton;
 	private static JTextArea resultTextArea;
 	private final JButton calculateButton;
 	private Controller controller;
-
-	static GetMintermList minlist = new GetMintermList();
 
     public static int minterm =0;
 	public static Set<String> mintermlist;
@@ -101,10 +99,10 @@ public class GUI extends JFrame {
 		setVisible(true);
 		add(panel);
 
+		GetMintermList.getInstance().addObserver(this);
+
 	}
-
-	public static void main(String[] args) {
-
+	public static void setLookAndFeel(){
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if (UIConstants.NIMBUS.equals(info.getName())) {
@@ -117,18 +115,28 @@ public class GUI extends JFrame {
 			e.printStackTrace();
 
 		}
+	}
+
+	public static void main(String[] args) {
+		setLookAndFeel();
 
 		String bitInput = JOptionPane
 				.showInputDialog(UILabels.BITS_INPUT_DIALOG);
 
 		MintermValidation.validateBits(bitInput);
 
-		Controller controller = new Controller(new GUI(null)); // Initialize controller and view
-		GUI gui= new GUI(controller);
-
+		Controller controller = new Controller(null);
+		GUI gui = new GUI(controller);
+		controller = new Controller(gui);
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	}
+
+	@Override
+	public void update(String result) {
+		resultTextArea.setText(result);
+	}
+
 }
 
 

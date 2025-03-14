@@ -16,21 +16,20 @@ public class Controller {
         String mintext = gui.getMintermInput();
         System.out.println(mintermInputField.getText()); //get
         try {
-            GUI.minterm = Integer.parseInt(mintext);
+            gui.minterm = Integer.parseInt(mintext);
         } catch (NumberFormatException e) {
-            GUI.minterm = -1;
+            gui.minterm = -1;
         } //handle
         MintermValidation.validateMinterm(mintext); //return
     }
 
     public static void handleNextButton() {
-        GUI.setInputField(); //set input field
+        gui.setInputField(); //set input field
         minList.setMinList(validatedMinterm);
     }
 
     public static void handleCalculateButton() {
         Set<String> mintermlist = GetMintermList.getMin();
-        String result = QuineProcessor.applyQuineMcCluskey(mintermlist);
-        GUI.updateResultArea(result);
+        minList.notifyObservers();
     }
 }
