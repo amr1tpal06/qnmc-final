@@ -10,26 +10,28 @@ public class Controller {
 
     public Controller(GUI gui) {
         this.gui=gui;
+        minList.addObserver(gui);
     }
 
-    public static void handleMintermInputField(JTextField mintermInputField){
+    public void handleMintermInputField(JTextField mintermInputField){
         String mintext = gui.getMintermInput();
         System.out.println(mintermInputField.getText()); //get
         try {
-            gui.minterm = Integer.parseInt(mintext);
+            gui.minterm = Integer.parseInt(mintext); //shouldnt be direct
         } catch (NumberFormatException e) {
             gui.minterm = -1;
         } //handle
         MintermValidation.validateMinterm(mintext); //return
     }
 
-    public static void handleNextButton() {
+    public void handleNextButton() {
         gui.setInputField(); //set input field
         minList.setMinList(validatedMinterm);
     }
 
-    public static void handleCalculateButton() {
-        Set<String> mintermlist = GetMintermList.getMin();
-        minList.notifyObservers();
+    public void handleCalculateButton() {
+        //Set<String> mintermlist = GetMintermList.getMin();
+        String result = QuineProcessor.applyQuineMcCluskey(GetMintermList.getMin());
+        gui.updateResultArea(result);
     }
 }

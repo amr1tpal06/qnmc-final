@@ -1,5 +1,4 @@
 package qnmc;
-//design patterns
 
 import java.awt.Font;
 import java.awt.event.*;
@@ -28,18 +27,18 @@ public class GUI extends JFrame implements Observer {
 	public static Set<String> mintermlist;
 
 	public void setNextButtonActionListener(){
-		nextButton.addActionListener(e-> Controller.handleNextButton());
+		nextButton.addActionListener(e-> controller.handleNextButton());
 	}
 
 	public void setCalculateButtonListener(){
-		calculateButton.addActionListener(e -> Controller.handleCalculateButton());
+		calculateButton.addActionListener(e -> controller.handleCalculateButton());
 	}
 
 	public void setMintermInputFieldListener(){
 		mintermInputField.addKeyListener(new KeyAdapter() { //KeyAdapter to override only the methods you care about (in this case, keyReleased)
 			@Override
 			public void keyReleased(KeyEvent e) {
-				Controller.handleMintermInputField(mintermInputField);
+				controller.handleMintermInputField(mintermInputField);
 			}
 		});
 	}
@@ -57,9 +56,10 @@ public class GUI extends JFrame implements Observer {
 	}
 
 
-	public GUI(Controller controller) {
+	public GUI() {
 
 		super(UILabels.QUINE_MCCLUSKEY_TITLE);
+
 		setLayout(null);
 		setSize(550, 500);
 		setResizable(false);
@@ -99,8 +99,6 @@ public class GUI extends JFrame implements Observer {
 		setVisible(true);
 		add(panel);
 
-		GetMintermList.getInstance().addObserver(this);
-
 	}
 	public static void setLookAndFeel(){
 		try {
@@ -125,10 +123,14 @@ public class GUI extends JFrame implements Observer {
 
 		MintermValidation.validateBits(bitInput);
 
-		Controller controller = new Controller(null);
-		GUI gui = new GUI(controller);
-		controller = new Controller(gui);
+		GUI gui = new GUI();
+		Controller controller = new Controller(gui);
+		gui.setController(controller);
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	public void setController(Controller controller){
+		this.controller=controller;
 
 	}
 
@@ -136,7 +138,6 @@ public class GUI extends JFrame implements Observer {
 	public void update(String result) {
 		resultTextArea.setText(result);
 	}
-
 }
 
 
